@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الطباعة عبر الويب</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      background-image: url(college.jpeg);
+      
+    }
+
+    header {
+      background-color: #333;
+      color: white;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    input[type="file"], textarea {
+      margin: 10px;
+      padding: 10px;
+      width: 80%;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #008CBA;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005f73;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>طباعة الملفات أو النصوص عبر الويب</h1>
+  </header>
+
+  <section>
+    <h2>تحميل ملف للطباعة</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">إرسال للطباعة</button>
+
+    <h2>أو أدخل نصًا للطباعة</h2>
+    <textarea id="textInput" rows="5" placeholder="أدخل النص هنا..."></textarea>
+    <button onclick="sendText()">طباعة النص</button>
+
+    <p id="statusMessage"></p>
+  </section>
+
+  <script>
+    function uploadFile() {
+      const file = document.getElementById('fileInput').files[0];
+      if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/print-file', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('statusMessage').innerText = data.message;
+        });
+      } else {
+        alert('الرجاء اختيار ملف للطباعة.');
+      }
+    }
+
+    function sendText() {
+      const text = document.getElementById('textInput').value;
+      if (text) {
+        fetch('/print-text', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text: text })
+        })
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('statusMessage').innerText = data.message;
+        });
+      } else {
+        alert('الرجاء إدخال نص للطباعة.');
+      }
+    }
+  </script>
+
+</body>
+</html>
